@@ -1,0 +1,45 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: A stack for jumphost/jenkins server
+Parameters:
+  AmiId:
+    Type: AWS::EC2::Image::Id
+    Default: ami-428aa838
+  InstanceType:
+    Type: String
+    Default: t2.micro
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+    Default: vpc-c57e7dbd
+  KeyName:
+    Type: AWS::EC2::KeyPair::KeyName
+    Default: brickmeal-2018
+Resources:
+  SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: JenkinsSG
+      GroupDescription: Security group for Jenkins / ssh jumphost
+      SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          Description: Allow everything outbound
+          IpProtocol: -1
+      SecurityGroupIngress:
+        - CidrIp: 216.30.189.247/32
+          Description: SSH from Tom S house
+          IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+        - CidrIp: 216.30.189.247/32
+          Description: Jenkins from Tom S house
+          IpProtocol: tcp
+          FromPort: 8080
+          ToPort: 8080
+  EC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId:
+        Ref: AmiId
+      InstanceType:
+        Ref: InstanceType
+      
+      
