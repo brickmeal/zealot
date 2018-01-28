@@ -1,0 +1,8 @@
+[all-servers:vars]
+ansible_ssh_private_key_file = ~/.ssh/brickmeal-2018.pem
+
+[all-servers:children]
+jumphost
+
+[jumphost]
+jumphost.brickmeal.net

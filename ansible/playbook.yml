@@ -1,0 +1,37 @@
+---
+- hosts: jumphost
+  remote_user: ec2-user
+  become: true
+
+  tasks:
+    - name: ensure java is installed
+      yum: name=java-1.8.0-openjdk.x86_64 state=latest
+      
+    - name: setup jenkins repo
+      get_url:
+        url: https://pkg.jenkins.io/redhat-stable/jenkins.repo
+        dest: /etc/yum.repos.d/jenkins.repo
+      
+    - name: import jenkins rpm key
+      rpm_key:
+        state: present
+        key: https://pkg.jenkins.io/redhat-stable/jenkins.io.key
+      
+    - name: install jenkins
+      yum: name=jenkins state=latest
+
+    - name: ensure jenkins is running
+      service:
+        name: jenkins
+        state: started
+        
+    - name: bootstrap leiningen
+      get_url:
+        url: https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein
+        dest: /usr/local/bin/lein
+        mode: 0555
+
+    - name: run leiningen
+      command: lein
+        
+      
