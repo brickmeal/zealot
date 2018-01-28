@@ -13,6 +13,9 @@ Parameters:
   KeyName:
     Type: AWS::EC2::KeyPair::KeyName
     Default: brickmeal-2018
+  EipAllocationId:
+    Type: String
+    Default: eipalloc-b8c7ea8f
 Resources:
   SecurityGroup:
     Type: AWS::EC2::SecurityGroup
@@ -34,6 +37,18 @@ Resources:
           IpProtocol: tcp
           FromPort: 8080
           ToPort: 8080
+        - CidrIp: 216.98.77.170/32
+          Description: SSH from LH office
+          IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+        - CidrIp: 216.98.77.170/32
+          Description: Jenkins from LH office
+          IpProtocol: tcp
+          FromPort: 8080
+          ToPort: 8080
+      VpcId:
+        Ref: VpcId
   EC2Instance:
     Type: AWS::EC2::Instance
     Properties:
@@ -41,5 +56,14 @@ Resources:
         Ref: AmiId
       InstanceType:
         Ref: InstanceType
-      
-      
+      KeyName:
+        Ref: KeyName
+      SecurityGroupIds:
+        - Ref: SecurityGroup
+  EipAssociation:
+    Type: AWS::EC2::EIPAssociation
+    Properties:
+      AllocationId:
+        Ref: EipAllocationId
+      InstanceId:
+        Ref: EC2Instance
