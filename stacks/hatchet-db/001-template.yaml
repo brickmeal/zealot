@@ -1,0 +1,44 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: A stack for the hatchet database
+Parameters:
+  MasterDbUser:
+    Type: String
+    Description: Enter the username of the master user
+  MasterDbPassword:
+    Type: String
+    Description: Enter the password for the master user
+  JumphostSecurityGroupId:
+    Type: "AWS::EC2::SecurityGroup::Id"
+    Description: Enter the ID of the jumphost security group
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+    Default: vpc-c57e7dbd
+Resources:
+  SecurityGroup:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupName: HatchetDbDev
+      GroupDescription: Security group for the dev hatchet database instance
+      SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          Description: Open egress
+          IpProtocol: -1
+      SecurityGroupIngress:
+        - SourceSecurityGroupId: !Ref JumphostSecurityGroupId
+          IpProtocol: tcp
+          FromPort: 5432
+          ToPort: 5432
+          Description: Inbound postgres from jumphost
+      VpcId: !Ref VpcId
+  RDSInstance:
+    Type: "AWS::RDS::DBInstance"
+    Properties:
+      AllocatedStorage: 20
+      DBInstanceClass: db.t2.micro
+      DBName: HatchetDev
+      Engine: postgres
+      EngineVersion: 10.1
+      MasterUsername: !Ref MasterDbUser
+      MasterUserPassword: !Ref MasterDbPassword
+      VPCSecurityGroups:
+        - !Ref SecurityGroup

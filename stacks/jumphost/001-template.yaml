@@ -20,8 +20,8 @@ Resources:
   SecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupName: JenkinsSG
-      GroupDescription: Security group for Jenkins / ssh jumphost
+      GroupName: JumphostSg
+      GroupDescription: Security group for ssh jumphost
       SecurityGroupEgress:
         - CidrIp: 0.0.0.0/0
           Description: Allow everything outbound
